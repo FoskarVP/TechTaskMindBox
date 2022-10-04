@@ -1,0 +1,32 @@
+﻿"В базе данных MS SQL Server есть продукты и категории. Одному продукту может соответствовать много категорий, в одной категории может быть много продуктов. 
+Напишите SQL запрос для выбора всех пар «Имя продукта – Имя категории». Если у продукта нет категорий, то его имя все равно должно выводиться."
+
+
+Для соблюдения связи вида "многие ко многим" в реляционной модели необходимо иметь следующую структуру таблиц (схема упрощена):
+
+Product (
+	product_id int,
+	name nvarchar(50)
+)
+
+Category (
+	category_id int,
+	name nvarchar(50)
+)
+
+ProductCategory (
+	product_id int,
+	category_id int
+)
+
+Тогда, запрос на получение пар "Имя продукта – Имя категории" будет выгляждеть следующим образом:
+
+SELECT 
+	P.name,
+	COALESCE(C.name, N'[Без категории]')
+FROM 
+	ProductCategory AS PC
+	RIGHT JOIN Product AS P ON PC.product_id = P.product_id
+ 	LEFT JOIN Category AS C ON PC.category_id = C.category_id
+ORDER BY
+	P.name, C.name;
